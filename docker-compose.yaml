@@ -1,7 +1,30 @@
-version: "3.5"
 services:
   nats:
     image: nats
     ports:
       - "4222:4222"
     command: "--js"
+
+  consumer:
+    build:
+      context: messaging
+      dockerfile: consumer.Dockerfile
+    environment:
+      NATS_URL: nats://nats:4222
+      NATS_USER: user
+      NATS_PASSWORD: pass
+      NATS_TOPIC: nats_topic
+    depends_on:
+      - nats
+
+  # publisher:
+  #   build:
+  #     context: messaging
+  #     dockerfile: publisher.Dockerfile
+  #   environment:
+  #     NATS_URL: nats://nats:4222
+  #     NATS_USER: user
+  #     NATS_PASSWORD: pass
+  #     NATS_TOPIC: nats_topic
+  #   depends_on:
+  #     - consumer

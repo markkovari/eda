@@ -7,13 +7,17 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-const topic string = "the_message_topic"
+var natsUrl = os.Getenv("NATS_URL")
+var natsUser = os.Getenv("NATS_USER")
+var natsPassword = os.Getenv("NATS_PASSWORD")
+var natsTopic = os.Getenv("NATS_TOPIC")
 
 func main() {
-	nc, err := nats.Connect(nats.DefaultURL)
+
+	nc, err := nats.Connect(natsUrl, nats.UserInfo(natsUser, natsPassword))
 
 	if err != nil {
-		println("Cannot connect")
+		fmt.Print("Cannot connect")
 		os.Exit(1)
 	}
 	defer nc.Close()
@@ -21,8 +25,8 @@ func main() {
 
 	for i := 0; i < 100; i++ {
 		nextMessage := "Sending message " + fmt.Sprint(currentMessage)
-		nc.Publish(topic, []byte(nextMessage))
+		nc.Publish(natsTopic, []byte(nextMessage))
 		currentMessage += 1
-		println("Successfully sent")
+		fmt.Printf("Successfully sent: %d\n", currentMessage)
 	}
 }
